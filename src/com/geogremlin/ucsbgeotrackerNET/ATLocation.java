@@ -81,7 +81,7 @@ public class ATLocation extends Service {
 		// Toast.makeText(this, Text, Toast.LENGTH_SHORT).show();
 		
 		Timestamp ts = new Timestamp(Calendar.getInstance().getTime().getTime());
-		storeData(""+currentLocation.getLatitude(), ""+currentLocation.getLongitude(), ""+ts);
+		storeData(""+currentLocation.getLatitude(), ""+currentLocation.getLongitude(), ""+ts, best);
 		
 	    locationListener = new MyLocationListener();
 	}
@@ -95,7 +95,7 @@ public class ATLocation extends Service {
 	@Override
 	public void onStart(Intent intent, int startid) {
 		// Toast.makeText(this, "GPS Tracker Started", Toast.LENGTH_SHORT).show();
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,60000, 2, locationListener);
+		locationManager.requestLocationUpdates(best,60000, 2, locationListener);
 	}
 	
 	public class MyLocationListener implements LocationListener {
@@ -104,7 +104,7 @@ public class ATLocation extends Service {
 		public void onLocationChanged(Location loc) {
 			// Toast.makeText(getApplicationContext(), "Location Changed\nAttempting to send fix to DB", Toast.LENGTH_SHORT).show();
 			Timestamp ts = new Timestamp(Calendar.getInstance().getTime().getTime());	
-			storeData(""+loc.getLatitude(), ""+loc.getLongitude(), ""+ts);
+			storeData(""+loc.getLatitude(), ""+loc.getLongitude(), ""+ts, best);
 		}
 
 		@Override
@@ -125,10 +125,10 @@ public class ATLocation extends Service {
 	}
 
 	
-	private void storeData(String lat, String lon, String timest) {
+	private void storeData(String lat, String lon, String timest, String prov) {
 		// Toast.makeText( getApplicationContext(),"Entered storeData function",Toast.LENGTH_SHORT ).show();
 		 if (isNetworkAvailable(getApplicationContext())) {
-			 String response = sendLocation(deviceId, lat, lon, timest);
+			 String response = sendLocation(deviceId, lat, lon, timest, prov);
 			 // String lines[] = response.split("\\r?\\n");
 			 if (response != "0") {
 				 // Toast.makeText( getApplicationContext(),"GPS fix successfully stored in the database.",Toast.LENGTH_SHORT).show();
@@ -161,7 +161,7 @@ public class ATLocation extends Service {
 		}
 	 }
 	
-	private String sendLocation(String uid, String lat, String lon, String timest) {
+	private String sendLocation(String uid, String lat, String lon, String timest, String prov) {
 		String handler = "http://geogremlin.geog.ucsb.edu/android/tracker-gps/store_fix.php";
 
 		HttpClient httpclient = new DefaultHttpClient();  
@@ -174,6 +174,8 @@ public class ATLocation extends Service {
 	        nameValuePairs.add(new BasicNameValuePair("lat", lat));
 	        nameValuePairs.add(new BasicNameValuePair("lng", lon));
 	        nameValuePairs.add(new BasicNameValuePair("t", timest));
+	        nameValuePairs.add(new BasicNameValuePair("source", prov));
+	        nameValuePairs.add(new BasicNameValuePair("app", "NET"));
 	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
 	  
 	        // Execute HTTP Post Request  
