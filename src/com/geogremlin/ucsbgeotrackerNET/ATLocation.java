@@ -80,8 +80,8 @@ public class ATLocation extends Service {
 		// String Text = "Last Latitude = " + currentLocation.getLatitude() + "\nLast Longitude = " + currentLocation.getLongitude();
 		// Toast.makeText(this, Text, Toast.LENGTH_SHORT).show();
 		
-		Timestamp ts = new Timestamp(Calendar.getInstance().getTime().getTime());
-		storeData(""+currentLocation.getLatitude(), ""+currentLocation.getLongitude(), ""+ts, best);
+		// Timestamp ts = new Timestamp(Calendar.getInstance().getTime().getTime());
+		// storeData(""+currentLocation.getLatitude(), ""+currentLocation.getLongitude(), ""+ts, best);
 		
 	    locationListener = new MyLocationListener();
 	}
